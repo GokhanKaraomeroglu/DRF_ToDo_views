@@ -1,31 +1,34 @@
 from django.http.response import HttpResponse
 from django.shortcuts import render
+from rest_framework import serializers
 from .serializers import TodoSerializer
 from .models import Todo
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-# Create your views here.
+from rest_framework import status
 
-def home (request):
-  return HttpResponse('<center><h1 style="background-color:powderblue;">KHAN DRF Funtional View Page</h1><center>')
+# Create your views here.
+def home(request):
+    return HttpResponse('<center><h1 style="background-color:powderblue;">Welcome to ApiTodo</h1></center>')
 
 
 @api_view(['GET'])
 def todoList(request):
-  querset = Todo.objects.all()
-  
-  serializer = TodoSerializer(querset, many=True)
-  
-  return Response (serializer.data)
-  
+    querset = Todo.objects.all()
+    
+    serializer = TodoSerializer(querset, many=True)
+    
+    return Response(serializer.data)
+
 @api_view(['POST'])
 def todoListCreate(request):
-  serializer = TodoSerializer(data=request.data)
-  if serializer.is_valid():
-    	serializer.save()
-  return Response (serializer.data)
+    serializer = TodoSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
+
 
 @api_view(['GET', 'POST'])
 def toDo_list(request):
@@ -39,6 +42,23 @@ def toDo_list(request):
         serializer = TodoSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-        return Response(serializer.data)
+            return Response(serializer.data, status = status.HTTP_201_CREATED)
+        return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
 
-	
+
+@api_view(['PUT'])
+def todoListUpdate(request, pk):
+  querset = Todo.objects.get(id=pk)
+  serializer = TodoSerializer(instance = querset, data=request.data)
+  if serializer.is_valid():
+    serializer.save()
+  return Response(serializer.data)
+
+  
+@api_view(['DELETE'])
+def todoListDelete(request, pk):
+  querset = Todo.objects.get(id=pk)
+  querset.delete()
+  return Response('ITEM DELETED')
+  
+  
