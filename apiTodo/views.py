@@ -12,12 +12,17 @@ def home (request):
   return HttpResponse('<center><h1 style="background-color:powderblue;">KHAN DRF Funtional View Page</h1><center>')
 
 
-@api_view()
-def TodoList(request):
+@api_view(['GET'])
+def todoList(request):
   querset = Todo.objects.all()
   
   serializer = TodoSerializer(querset, many=True)
   
   return Response (serializer.data)
   
-  
+@api_view(['POST'])
+def todoListCreate(request):
+  serializer = TodoSerializer(data=request.data)
+  if serializer.is_valid():
+    serializer.save()
+  return Response (serializer.data)
