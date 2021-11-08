@@ -48,12 +48,13 @@ def toDo_list(request):
 
 @api_view(['PUT'])
 def todoListUpdate(request, pk):
-  querset = Todo.objects.get(id=pk)
-  serializer = TodoSerializer(instance = querset, data=request.data)
-  if serializer.is_valid():
-    serializer.save()
-  return Response(serializer.data)
-
+    
+    querset = Todo.objects.get(id=pk)
+    
+    serializer = TodoSerializer(instance=querset, data =request.data)
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
   
 @api_view(['DELETE'])
 def todoListDelete(request, pk):
