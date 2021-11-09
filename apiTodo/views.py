@@ -1,3 +1,4 @@
+from django.db.models import query
 from django.http.response import HttpResponse
 from django.shortcuts import render
 from rest_framework import serializers
@@ -54,12 +55,37 @@ def todoListUpdate(request, pk):
     serializer = TodoSerializer(instance=querset, data =request.data)
     if serializer.is_valid():
         serializer.save()
-    return Response(serializer.data)
-  
-@api_view(['DELETE'])
-def todoListDelete(request, pk):
-  querset = Todo.objects.get(id=pk)
-  querset.delete()
-  return Response('ITEM DELETED')
-  
-  
+        return Response(serializer.data)
+    return Response(serializer.errors)
+
+@api_view(['DELETE']) 
+def todoListDelete(request, pk):    
+    querset = Todo.objects.get(id=pk)
+    querset.delete()
+    return Response("Item Deleted")
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def toDo_detail(request, pk):
+    querset = Todo.objects.get(id=pk)
+    
+    if request.method == 'GET':
+        serializer = TodoSerializer(querset)
+        return Response(serializer.data)
+    
+    elif request.method == 'PUT':
+            
+        serializer = TodoSerializer(instance=querset, data =request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+
+    elif request.method == 'DELETE':
+        
+        querset.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+        
+        
+    
