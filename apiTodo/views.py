@@ -116,7 +116,8 @@ class TodoDetail(APIView):
         serializer = TodoSerializer(todo, data =request.data)
         if serializer.is_valid():
             serializer.save()
-            serializer.data['success'] = 'Todo Succesfully Updated...'
+            # print(serializer.data)
+            serializer._data["success"] = "Todo Succesfully Updated.."
             return Response(serializer.data)
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
     
