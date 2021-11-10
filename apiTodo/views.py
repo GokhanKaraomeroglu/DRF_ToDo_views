@@ -82,8 +82,7 @@ def toDo_detail(request, pk):
             return Response(serializer.data)
         return Response(serializer.errors)
 
-    elif request.method == 'DELETE':
-        
+    elif request.method == 'DELETE':   
         querset.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
@@ -106,12 +105,27 @@ class TodoList(APIView):
 class TodoDetail(APIView):
     def get_object(self, pk):
         return get_object_or_404(Todo, pk=pk)
+    
     def get (self, request, pk):
         todo = self.get_object(pk)
         serializer = TodoSerializer(todo)
         return Response(serializer.data)
     
+    def put (self, request, pk):
+        todo = self.get_object(pk)
+        serializer = TodoSerializer(todo, data =request.data)
+        if serializer.is_valid():
+            serializer.save()
+            serializer.data['success'] = 'Todo Succesfully Updated...'
+            return Response(serializer.data)
+        return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+    
+    def delete (self, request, pk):
+        todo = self.get_object(pk)
+        todo.deleted()
+        return Response(status=status.HTTP_204_NO_CONTENT)
         
+    
         
         
     
