@@ -5,12 +5,13 @@ from rest_framework import serializers
 from .serializers import TodoSerializer
 from .models import Todo
 
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 
 from rest_framework import status
 from rest_framework .views import APIView
-from rest_framework .generics import GenericAPIView, mixins
+from rest_framework .generics import GenericAPIView, mixins, ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 
 # Create your views here.
@@ -151,3 +152,31 @@ class TodoRetrieveUpdateDelete(mixins.RetrieveModelMixin, mixins.UpdateModelMixi
     def delete(self, request, *args, **kwargs):
         return self.destroy (request, *args, **kwargs)
     
+
+
+################# Conctrete Views #############
+
+class TodoConcListCreate(ListCreateAPIView, RetrieveUpdateDestroyAPIView):
+    queryset = Todo.objects.all()
+    serializer_class = TodoSerializer
+
+class TodoConcRetrieveUpdateDelete(RetrieveUpdateDestroyAPIView):
+    queryset = Todo.objects.all()
+    serializer_class = TodoSerializer
+
+################# Viewsets ####################
+
+class TodoVSListRetreive(mixins.ListModelMixin, mixins.RetrieveModelMixin, GenericViewSet):
+    queryset = Todo.objects.all()
+    serializer_class = TodoSerializer
+    
+class todoMVS (ModelViewSet):
+    queryset = Todo.objects.all()
+    serializer_class = TodoSerializer
+    @action(methods=['GET'], detail=False,)
+    def todo_count(self, request):
+        todo_count = Todo.objects.filter(done=False).count()
+        count = {
+        'undo-todos': todo_count
+        }
+        return Response(count)
