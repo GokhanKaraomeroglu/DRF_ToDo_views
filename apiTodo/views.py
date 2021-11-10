@@ -106,6 +106,10 @@ class TodoList(APIView):
 class TodoDetail(APIView):
     def get_object(self, pk):
         return get_object_or_404(Todo, pk=pk)
+    def get (self, request, pk):
+        todo = self.get_object(pk)
+        serializer = TodoSerializer(todo)
+        return Response(serializer.data)
     
         
         
